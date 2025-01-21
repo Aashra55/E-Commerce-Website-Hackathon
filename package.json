@@ -1,0 +1,40 @@
+{
+  "name": "marketplace-builder-hackathon-general-e-commerce",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "import-data": "node scripts/importData.mjs"
+  },
+  "dependencies": {
+    "@sanity/client": "^6.25.0",
+    "@sanity/vision": "^3.70.0",
+    "axios": "^1.7.9",
+    "chart.js": "^4.4.7",
+    "dotenv": "^16.4.7",
+    "next": "14.2.16",
+    "next-sanity": "^9.8.38",
+    "react": "^18",
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^18",
+    "react-icons": "^5.4.0",
+    "react-toastify": "^11.0.3",
+    "sanity": "^3.70.0",
+    "swiper": "^11.2.1"
+  },
+  "devDependencies": {
+    "@types/chart.js": "^2.9.41",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "cypress": "^14.0.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.16",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
