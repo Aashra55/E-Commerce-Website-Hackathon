@@ -86,6 +86,7 @@ On Day 4, I focused on building all the dynamic components of the website to enh
 - **Subscription Management (UI):** I created the UI for subscription management, allowing users to manage their subscriptions to newsletters or product updates.
 - **Search Functionality:** I implemented a search functionality to allow users to easily search for products by name, category, or other attributes.
 - **Blog Section:** I added a blog section to the website, providing a platform for posting articles, updates, and news related to the marketplace and relevant topics.
+- **Loader Component:** To enhance user experience, I also created a loader component that appears while data is being fetched. This ensures that users are informed and the website feels responsive, even during data load times.
 
 This day was essential in developing the key features and functionalities that will allow users to interact with the marketplace efficiently.
 
