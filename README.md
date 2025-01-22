@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Commerce Website
 
-## Getting Started
+This is a full-stack e-commerce website built using **Next.js**, **React**, and **Tailwind CSS**. The project allows users to browse and filter products, add them to the cart, and make purchases. It also features dynamic product listings fetched from an external API and displays user reviews and social media share buttons.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Responsive Design:** The website is fully responsive and works well on all devices.
+- **Product Filtering:** Users can filter products by category, size, and price range using an interactive slider.
+- **State Management:** The project uses React's Context API for state management, making it easy to manage the shopping cart, product data, and user interactions across the app.
+- **Notifications:** Toast notifications are used for smooth user experience, displaying success, error, and informational messages.
+- **User Reviews & Social Media Sharing:** Components for user reviews and social media sharing buttons have been integrated to enhance engagement.
+- **Dynamic Data Fetching:** The product listings and details are fetched from a third-party API (Sanity.io), with proper handling of CORS issues and API errors.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js** for server-side rendering and routing.
+- **React** for UI components and state management.
+- **Tailwind CSS** for styling and responsive design.
+- **Sanity.io** as the headless CMS to manage product data.
+- **React Icons** for adding icons throughout the site.
+- **Toast** for notification handling.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
