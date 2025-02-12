@@ -293,14 +293,6 @@ export default function Header() {
                 Contact
               </Link>
             </li>
-            <li className="max-lg:border-b max-lg:px-3 max-lg:py-3">
-              <Link
-                href="/signup"
-                className="hover:text-orange-600 text-gray-800 text-[15px] block"
-              >
-                Signup
-              </Link>
-            </li>
 
           </ul>
         </div>

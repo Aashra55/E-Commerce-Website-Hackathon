@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { urlFor } from "../utils/sanity";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
+import  GetProductData  from "../../sanity/sanity.query";
 
 export default function Cart() {
   const [qty, setQty] = useState<Record<string, number>>({});
@@ -14,7 +17,7 @@ export default function Cart() {
     0
   );
 
-  // Handle increase product quantity
+  // // Handle increase product quantity
   const increaseProduct = (id: string) => {
     setQty((prevQty) => ({
       ...prevQty,
@@ -22,7 +25,7 @@ export default function Cart() {
     }));
   };
 
-  // Handle decrease product quantity
+  // // Handle decrease product quantity
   const decreaseProduct = (id: string) => {
     setQty((prevQty) => ({
       ...prevQty,
@@ -31,6 +34,28 @@ export default function Cart() {
   };
 
   console.log(cart);
+
+  //stock updating logic
+const updateStock = async (productId: string, quantity: number) => {
+  try {
+    const res = await fetch("/api/updateStock", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId, quantity }),
+    });
+
+    if (!res.ok) {
+      const errorMessage = await res.text(); // Get error response
+      throw new Error(errorMessage || "Failed to update stock");
+    }
+
+    const data = await res.json(); // Parse response JSON
+    console.log("Stock updated:", data.newStock);
+  } catch (error) {
+    console.error("Stock update failed:", error);
+  }
+};
+
   return (
     <div className="font-sans md:max-w-4xl max-md:max-w-xl mx-auto bg-white py-4">
       <div className="grid md:grid-cols-3 gap-4">
@@ -59,7 +84,15 @@ export default function Cart() {
                         {e.name}
                       </h3>
                       <h6
-                        onClick={() => removeFromCart(e._id)}
+                        onClick={() => {
+
+                          updateStock(e._id, -1); // Increase stock by 1
+
+                          if (window.confirm("Are you sure you want to remove this item?")) {
+                            removeFromCart(e._id);
+                            toast.warning("Product removed from cart!");
+                          }
+                        }}
                         className="text-xs text-red-500 cursor-pointer mt-0.5"
                       >
                         Remove
@@ -181,6 +214,11 @@ export default function Cart() {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={true}
+      />
     </div>
   );
 }

@@ -17,6 +17,7 @@ import SizeFilter from "../components/SizeFiltering";
 import tag from "../images/new.png";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 // Reducer function and initial state
 const initialState = {
@@ -55,6 +56,7 @@ export default function ProductsPage() {
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(500);
   const [selectedSize, setSelectedSize] = useState<string>("All");
+  const { data: session } = useSession();
 
   //function to handle toggle heart and to add items into wish list
   const handleWishList = (item: typeOfData) => {
@@ -137,6 +139,8 @@ export default function ProductsPage() {
     setFilteredProducts(filtered);
   }, [searchTerm, state.category, selectedSize, minPrice, maxPrice, products]);
 
+  console.log("Product:", products);
+
   return (
     <div>
       <div className="w-[100vw] md:p-10 p-4 text-center text-4xl">
@@ -200,7 +204,10 @@ export default function ProductsPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                   {filteredProducts.length > 0 ? (
                     filteredProducts.map((product, index) => (
-                      <div key={index} className="bg-white flex flex-col overflow-hidden cursor-pointer hover:shadow-md transition-all">
+                      <div
+                        key={index}
+                        className="bg-white flex flex-col overflow-hidden cursor-pointer hover:shadow-md transition-all"
+                      >
                         <div className="w-full">
                           {product.image ? (
                             <Link href={`/products/${product._id}`}>
@@ -213,7 +220,7 @@ export default function ProductsPage() {
                                       width={40}
                                       height={40}
                                       quality={75}
-                                      className="absolute md:ml-[170px] ml-[100px] m-2 z-[100]"
+                                      className="absolute lg:ml-[170px] md:ml-[122px] ml-[100px] m-2 z-[100]"
                                     />
                                   ) : null}
                                 </div>
@@ -307,26 +314,64 @@ export default function ProductsPage() {
                             >
                               {WishList[product._id] ? (
                                 <GoHeartFill
-                                  onClick={() => handleWishList(product)}
+                                  onClick={() => {
+                                    handleWishList(product);
+                                    toast.success(
+                                      <div>
+                                        <span>
+                                          Product removed from wishlist.
+                                        </span>
+                                        <button
+                                          onClick={() =>
+                                            handleWishList(product)
+                                          }
+                                          className="ml-2 text-blue-500"
+                                        >
+                                          Undo
+                                        </button>
+                                      </div>
+                                    );
+                                  }}
                                   className="text-pink-600 fillHeart"
                                 />
                               ) : (
                                 <GoHeart
-                                  onClick={() => handleWishList(product)}
+                                  onClick={() => {
+                                    if (session) {
+                                      handleWishList(product);
+                                      toast.success(
+                                        "Product added to wishlist!"
+                                      );
+                                    } else {
+                                      toast.error(
+                                        "Please login to add product to wishlist"
+                                      );
+                                    }
+                                  }}
                                   className="text-pink-600 emptyHeart"
                                 />
                               )}{" "}
                             </div>
                             <button
-                              onClick={() => {
-                                addToCart(product);
-                                toast.success("Product added to cart!");
+                              disabled={!product.stock || product.stock <= 0}
+                              onClick={() => {        
+                                                        
+                                if (session) {
+                                  addToCart(product);
+                                  toast.success("Product added to cart!");
+                                } else {
+                                  toast.error(
+                                    "Please login to add product to cart"
+                                  );
+                                }
                               }}
                               type="button"
-                              className="text-sm px-2 min-h-[36px] w-full bg-orange-600 hover:bg-orange-700 transition-transform duration-300 ease-in-out transform hover:scale-105 active:scale-95
-                              text-white tracking-wide ml-auto outline-none border-none rounded"
+                              className={`text-sm px-2 min-h-[36px] w-full transition-transform duration-300 ease-in-out transform hover:scale-105 active:scale-95
+                              text-white tracking-wide ml-auto outline-none border-none rounded ${product.stock === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"}`}
                             >
-                              Add to cart
+                              {product.stock === 0
+                                ? "Out of Stock"
+                                : "Add to Cart"}
                             </button>
                           </div>
                         </div>

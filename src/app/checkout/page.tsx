@@ -3,7 +3,7 @@ import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useCart } from "@/context/CartContext";
 import { nanoid } from "nanoid";  
-
+import { useSession } from "next-auth/react";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -14,6 +14,8 @@ export default function StripeCheckout() {
   const [loading, setLoading] = useState(false);
 
   const [message, setMessage] = useState("");
+
+  const { data: session } = useSession();
 
   const handleClick = async () => {
     setLoading(true);
@@ -42,8 +44,8 @@ export default function StripeCheckout() {
     setMessage("");
 
     const orderData = {
-      user: "John Doe",
-      email: "johndoe@example.com",
+      user: session?.user?.name,
+      email: session?.user?.email,
       products: cart.map((item) => ({
         _type: "reference",
         _ref: item._id,
@@ -82,7 +84,7 @@ export default function StripeCheckout() {
       >
         {loading ? "Redirecting..." : "Checkout with Stripe"}
       </button>
-      {message && <p className="mt-3 block">{message}</p>}
+      {message && <p className="m-3 block">{message}</p>}
     </div>
   );
 }

@@ -8,5 +8,6 @@ export type typeOfData = {
     name:string,
     price:number,
     category:string,
-    isNew:boolean
+    isNew:boolean,
+    stock:number
 }

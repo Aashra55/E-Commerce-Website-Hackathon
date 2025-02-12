@@ -12,6 +12,7 @@ export default async function GetProductData() {
       discountPercent,
       isNew,
       colors,
-      sizes
+      sizes,
+      stock
     }`);
 }

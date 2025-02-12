@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 import { typeOfData } from "@/app/utils/types";
 import { useCart } from "@/context/CartContext";
 import ReviewSection from "@/app/components/ReviewSection";
-import ShareButtons from "@/app/components/ShareButton"
+import ShareButtons from "@/app/components/ShareButton";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 export default function ProductDetails({
   params,
@@ -34,6 +35,7 @@ export default function ProductDetails({
   }, []);
 
   const details = data.find((e) => e._id === params._id);
+  const { data: session } = useSession();
 
   if (loading) {
     return (
@@ -44,7 +46,11 @@ export default function ProductDetails({
   }
 
   if (!details) {
-    return <p>No details found for the product.</p>;
+    return (
+      <p className="w-full h-[70vh] text-center pt-5">
+        No details found for the product.
+      </p>
+    );
   }
 
   const discountedPrice = (
@@ -198,7 +204,7 @@ export default function ProductDetails({
           <div className="mt-6">
             <h3 className="text-xl font-bold text-gray-800">Choose a Size</h3>
             <div className="flex flex-wrap gap-4 mt-4">
-              {details.sizes.map((e: string, index:number) => (
+              {details.sizes.map((e: string, index: number) => (
                 <div key={index}>
                   <button
                     type="button"
@@ -229,15 +235,23 @@ export default function ProductDetails({
 
           <div className="mt-6 space-y-4">
             <button
+              disabled={!details.stock || details.stock <= 0}
               onClick={() => {
-                addToCart(details);
-                toast.success("Product added to cart!");
+                if (!details.stock || details.stock <= 0) return; // Prevents execution
+
+                if (session) {
+                  addToCart(details);
+                  toast.success("Product added to cart!");
+                } else {
+                  toast.error("Please login to add product to cart");
+                }
               }}
               type="button"
-              className=" transition-transform duration-300 ease-in-out transform hover:scale-105 active:scale-95
-              text-sm px-2 min-h-[36px] w-full bg-orange-600 hover:bg-orange-700 text-white tracking-wide ml-auto outline-none border-none rounded"
+              className={`transition-transform duration-300 ease-in-out transform hover:scale-105 active:scale-95
+              text-sm px-2 min-h-[36px] w-full text-white tracking-wide ml-auto outline-none border-none rounded 
+              ${details.stock === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"}`}
             >
-              Add to cart
+              {details.stock === 0 ? "Out of Stock" : "Add to Cart"}{" "}
             </button>
           </div>
 
