@@ -258,9 +258,11 @@ export default function ProductsPage() {
                                   ).toFixed(2)}
                                 </h6>
                                 <h6 className="text-sm sm:text-base text-gray-500">
-                                  <span className="line-through">
-                                    ${product.price.toFixed(2)}
-                                  </span>
+                                  {product.discountPercent ? (
+                                    <span className="line-through">
+                                      ${product.price.toFixed(2)}
+                                    </span>
+                                  ) : null}
                                 </h6>
                               </div>
                               <div className="flex items-center gap-0.5">
@@ -317,19 +319,7 @@ export default function ProductsPage() {
                                   onClick={() => {
                                     handleWishList(product);
                                     toast.success(
-                                      <div>
-                                        <span>
-                                          Product removed from wishlist.
-                                        </span>
-                                        <button
-                                          onClick={() =>
-                                            handleWishList(product)
-                                          }
-                                          className="ml-2 text-blue-500"
-                                        >
-                                          Undo
-                                        </button>
-                                      </div>
+                                      "Product removed from wishlist!"
                                     );
                                   }}
                                   className="text-pink-600 fillHeart"
@@ -354,8 +344,7 @@ export default function ProductsPage() {
                             </div>
                             <button
                               disabled={!product.stock || product.stock <= 0}
-                              onClick={() => {        
-                                                        
+                              onClick={() => {
                                 if (session) {
                                   addToCart(product);
                                   toast.success("Product added to cart!");
