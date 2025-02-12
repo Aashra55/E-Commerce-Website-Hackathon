@@ -237,7 +237,6 @@ export default function ProductDetails({
             <button
               disabled={!details.stock || details.stock <= 0}
               onClick={() => {
-                if (!details.stock || details.stock <= 0) return; // Prevents execution
 
                 if (session) {
                   addToCart(details);
