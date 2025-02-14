@@ -15,7 +15,10 @@
     "@stripe/stripe-js": "^5.6.0",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
+    "lucide-react": "^0.475.0",
     "nanoid": "^5.0.9",
     "next": "14.2.16",
     "next-auth": "^4.24.11",
@@ -28,7 +31,9 @@
     "react-toastify": "^11.0.3",
     "sanity": "^3.70.0",
     "stripe": "^17.6.0",
-    "swiper": "^11.2.1"
+    "swiper": "^11.2.1",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/chart.js": "^2.9.41",

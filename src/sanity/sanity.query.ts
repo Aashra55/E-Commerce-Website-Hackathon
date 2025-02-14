@@ -14,5 +14,17 @@ export default async function GetProductData() {
       colors,
       sizes,
       stock
-    }`);
+    }
+    `);
 }
+
+export async function GetOrderData(){
+  return sanityClient.fetch(`
+    *[_type == "order"]{
+       "products": products[]->{_id, name, category, price},
+      totalPrice,
+      status,
+      createdAt
+    }
+  `);
+};
