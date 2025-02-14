@@ -1,43 +1,14 @@
 "use client";
-import { useState } from "react";
 import React from "react";
+import { FormEvent } from "react";
 export default function Contact() {
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   email: "",
-  //   message: "",
-  // });
-
-  // const [status, setStatus] = useState("");
-  // const handleChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  // ) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setStatus("Sending...");
-  //   const res = await fetch("/api/contact", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(formData),
-  //   });
-
-  //   if (res.ok) {
-  //     setStatus("Message sent successfully!");
-  //     setFormData({ name: "", email: "", message: "" });
-  //   } else {
-  //     setStatus("Failed to send message. Try again later.");
-  //   }
-  // };
 
   const [result, setResult] = React.useState("");
 
-  const onSubmit = async (event:any) => {
+  const onSubmit = async (event:FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setResult("Sending....");
-    const formData = new FormData(event.target);
+    const formData = new FormData(event.currentTarget);
 
     formData.append("access_key", '412703ee-9412-485d-98a4-4675d236e513');
 
@@ -50,7 +21,7 @@ export default function Contact() {
 
     if (data.success) {
       setResult("Form Submitted Successfully");
-      event.target.reset();
+      event.currentTarget.reset();
     } else {
       console.log("Error", data);
       setResult(data.message);

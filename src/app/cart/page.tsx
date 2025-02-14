@@ -7,7 +7,6 @@ import { useCart } from "@/context/CartContext";
 import { urlFor } from "../utils/sanity";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
-import  GetProductData  from "../../sanity/sanity.query";
 
 export default function Cart() {
   const [qty, setQty] = useState<Record<string, number>>({});
