@@ -349,6 +349,9 @@ export default function ProductsPage() {
                                   addToCart(product);
                                   toast.success("Product added to cart!");
                                 } else {
+                                  console.log(
+                                    "Toast Error Triggered: Please login to add product to cart"
+                                  );
                                   toast.error(
                                     "Please login to add product to cart"
                                   );
