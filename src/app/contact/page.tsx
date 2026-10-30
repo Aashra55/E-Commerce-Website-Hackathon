@@ -1,167 +1,217 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { FormEvent } from "react";
+import {
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiClock,
+  FiSend,
+  FiCheckCircle,
+  FiMessageSquare,
+} from "react-icons/fi";
+
 export default function Contact() {
+  const [result, setResult] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [result, setResult] = React.useState("");
-
-  const onSubmit = async (event:FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setResult("Sending....");
-    const formData = new FormData(event.currentTarget);
+    setIsSubmitting(true);
+    setResult("Sending your message...");
 
-    formData.append("access_key", '412703ee-9412-485d-98a4-4675d236e513');
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    formData.append("access_key", "412703ee-9412-485d-98a4-4675d236e513");
 
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      body: formData
-    });
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      setResult("Form Submitted Successfully");
-      event.currentTarget.reset();
-    } else {
-      console.log("Error", data);
-      setResult(data.message);
+      if (data.success) {
+        setResult("Thank you! Your message has been sent successfully.");
+        form.reset();
+      } else {
+        console.log("Error", data);
+        setResult(data.message || "Failed to send message. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      setResult("Network error. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8">
-      <div className="grid md:grid-cols-2 gap-8 items-start">
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h2 className="text-3xl font-bold text-orange-600 mb-4">
-            Get in touch
-          </h2>
-          <p className="text-gray-600 mb-8 text-sm">
-            Feel free to contact us and we will get back to you as soon as
-            possible
+    <div className="bg-[#fafbfc] min-h-screen py-10 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <span className="text-xs font-bold uppercase tracking-widest text-orange-600 block mb-1">
+            24/7 Concierge Support
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+            We&rsquo;d Love to Hear from You
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-2">
+            Have questions about an order, styling advice, or wholesale inquiries? Our friendly support team responds within 2 hours.
           </p>
-
-          <form className="space-y-4" onSubmit={onSubmit}>
-            <input
-              type="text"
-              name="name"
-              placeholder="Your Name"
-              required
-              className="w-full p-3 rounded-lg bg-white border text-sm border-gray-200 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Your Email"
-              required
-              className="w-full p-3 rounded-lg bg-white border text-sm border-gray-200 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
-            />
-            <textarea
-              name="message"
-              placeholder="Your Message"
-              required
-              rows={4}
-              className="w-full p-3 rounded-lg bg-white border text-sm border-gray-200 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none resize-none"
-            ></textarea>
-            <button
-              type="submit"
-              className=" transition-transform duration-300 ease-in-out transform hover:scale-105 active:scale-95
-              w-full text-sm bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-            >
-              Send
-            </button>
-          </form>
-          <span>{result}</span>
         </div>
 
-        <div className="space-y-8">
-          <div className="bg-white rounded-lg p-6 shadow">
-            <h3 className="text-xl font-semibold text-orange-600 mb-6">
-              Contact Information
-            </h3>
-
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5 fill-orange-900"
-                  viewBox="0 0 64 64"
-                >
-                  <path
-                    d="M32 0A24.032 24.032 0 0 0 8 24c0 17.23 22.36 38.81 23.31 39.72a.99.99 0 0 0 1.38 0C33.64 62.81 56 41.23 56 24A24.032 24.032 0 0 0 32 0zm0 35a11 11 0 1 1 11-11 11.007 11.007 0 0 1-11 11z"
-                    data-original="#000000"
-                  />
-                </svg>
-                <div>
-                  <h4 className="font-semibold text-gray-900 text-sm mb-1">
-                    Our Location
-                  </h4>
-                  <p className="text-gray-600 text-sm">123 Business Street</p>
-                  <p className="text-gray-600 text-sm">New York, NY 10001</p>
-                </div>
+        {/* 2-Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Contact Form */}
+          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-100 p-6 sm:p-10 shadow-xs">
+            <div className="flex items-center gap-3 pb-6 border-b border-slate-100 mb-6">
+              <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                <FiMessageSquare className="w-5 h-5" />
               </div>
-
-              <div className="flex items-start space-x-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5 fill-orange-900"
-                  viewBox="0 0 513.64 513.64"
-                >
-                  <path
-                    d="m499.66 376.96-71.68-71.68c-25.6-25.6-69.12-15.359-79.36 17.92-7.68 23.041-33.28 35.841-56.32 30.72-51.2-12.8-120.32-79.36-133.12-133.12-7.68-23.041 7.68-48.641 30.72-56.32 33.28-10.24 43.52-53.76 17.92-79.36l-71.68-71.68c-20.48-17.92-51.2-17.92-69.12 0L18.38 62.08c-48.64 51.2 5.12 186.88 125.44 307.2s256 176.641 307.2 125.44l48.64-48.64c17.921-20.48 17.921-51.2 0-69.12z"
-                    data-original="#000000"
-                  />
-                </svg>
-                <div>
-                  <h4 className="font-semibold text-gray-900 text-sm mb-1">
-                    Phone Number
-                  </h4>
-                  <p className="text-gray-600 text-sm">+1 (555) 123-4567</p>
-                </div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Send Us a Message</h2>
+                <p className="text-xs text-slate-500">Fill in the form below and we will get back to you shortly</p>
               </div>
+            </div>
 
-              <div className="flex items-start space-x-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5 fill-orange-900"
-                  viewBox="0 0 512 512"
-                >
-                  <path
-                    d="M298.789 313.693c-12.738 8.492-27.534 12.981-42.789 12.981-15.254 0-30.05-4.489-42.788-12.981L3.409 173.82A76.269 76.269 0 0 1 0 171.403V400.6c0 26.278 21.325 47.133 47.133 47.133h417.733c26.278 0 47.133-21.325 47.133-47.133V171.402a75.21 75.21 0 0 1-3.416 2.422z"
-                    data-original="#000000"
-                  />
-                  <path
-                    d="m20.05 148.858 209.803 139.874c7.942 5.295 17.044 7.942 26.146 7.942 9.103 0 18.206-2.648 26.148-7.942L491.95 148.858c12.555-8.365 20.05-22.365 20.05-37.475 0-25.981-21.137-47.117-47.117-47.117H47.117C21.137 64.267 0 85.403 0 111.408a44.912 44.912 0 0 0 20.05 37.45z"
-                    data-original="#000000"
-                  />
-                </svg>
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-semibold text-gray-900 text-sm mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="e.g. John Doe"
+                    required
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Email Address
-                  </h4>
-                  <p className="text-gray-600 text-sm">contact@business.com</p>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="john@example.com"
+                    required
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 transition"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Your Message
+                </label>
+                <textarea
+                  name="message"
+                  placeholder="How can we assist you today? Please include order number if applicable."
+                  required
+                  rows={5}
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 transition resize-none"
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full py-3.5 px-6 rounded-full font-bold text-xs sm:text-sm tracking-wide shadow-md flex items-center justify-center gap-2 transition-all active:scale-98 ${
+                  isSubmitting
+                    ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                    : "bg-orange-600 hover:bg-orange-700 text-white shadow-orange-500/20"
+                }`}
+              >
+                <FiSend className="w-4 h-4" />
+                <span>{isSubmitting ? "Sending..." : "Send Message"}</span>
+              </button>
+
+              {result && (
+                <div
+                  className={`p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                    result.includes("Thank you") || result.includes("success")
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      : "bg-slate-100 text-slate-700 border border-slate-200"
+                  }`}
+                >
+                  <FiCheckCircle className="w-4 h-4 shrink-0" />
+                  <span>{result}</span>
+                </div>
+              )}
+            </form>
+          </div>
+
+          {/* Contact Information & Hours */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-xs space-y-6">
+              <h3 className="text-lg font-bold text-slate-900 pb-3 border-b border-slate-100">
+                Contact Details
+              </h3>
+
+              <div className="space-y-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
+                    <FiMapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900">Flagship Showroom</h4>
+                    <p className="text-xs text-slate-500 mt-0.5">123 Fashion Avenue, Suite 400</p>
+                    <p className="text-xs text-slate-500">New York, NY 10001</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <FiPhone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900">Toll-Free Phone</h4>
+                    <p className="text-xs text-slate-500 mt-0.5">+1 (800) 555-0199</p>
+                    <p className="text-[11px] text-slate-400">Monday - Friday 9am-6pm EST</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <FiMail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900">Email Inquiries</h4>
+                    <p className="text-xs text-slate-500 mt-0.5">support@modernstore.com</p>
+                    <p className="text-[11px] text-slate-400">2-hour average response time</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-lg p-6 shadow">
-            <h3 className="text-xl font-semibold text-orange-600 mb-6">
-              Hours of Operation
-            </h3>
-            <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-gray-600 text-sm">Monday - Friday</span>
-                <span className="text-gray-800 text-sm">9:00 AM - 6:00 PM</span>
+            {/* Hours */}
+            <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <FiClock className="w-4 h-4 text-orange-600" />
+                <h3 className="text-sm font-bold text-slate-900">Operating Hours</h3>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 text-sm">Saturday</span>
-                <span className="text-gray-800 text-sm">
-                  10:00 AM - 4:00 PM
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 text-sm">Sunday</span>
-                <span className="text-gray-800 text-sm">Closed</span>
+
+              <div className="space-y-2.5 text-xs">
+                <div className="flex justify-between text-slate-600">
+                  <span>Monday - Friday</span>
+                  <span className="font-bold text-slate-900">9:00 AM - 6:00 PM EST</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Saturday</span>
+                  <span className="font-bold text-slate-900">10:00 AM - 4:00 PM EST</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Sunday</span>
+                  <span className="font-bold text-rose-500">Closed for Maintenance</span>
+                </div>
               </div>
             </div>
           </div>
@@ -170,5 +220,3 @@ export default function Contact() {
     </div>
   );
 }
-
-

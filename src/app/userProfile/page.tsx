@@ -1,13 +1,10 @@
 "use client";
-import { useSession } from "next-auth/react";
-import { signIn, signOut } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { FaGithub } from "react-icons/fa";
-import { FiLogOut } from "react-icons/fi";
+import { FiLogOut, FiPackage, FiUser } from "react-icons/fi";
 import { GetOrderData } from "@/sanity/sanity.query";
 import { Order } from "../utils/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -30,188 +27,255 @@ ChartJS.register(
 
 const AnalyticsDashboard: React.FC = () => {
   const salesData = {
-    labels: ["January", "February", "March", "April", "May"],
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
       {
-        label: "Sales",
-        data: [3000, 4500, 4000, 5000, 7000],
-        backgroundColor: "#E4599C",
+        label: "Sales ($)",
+        data: [3200, 4500, 4100, 5600, 7200, 8400],
+        backgroundColor: "#f97316",
+        borderRadius: 8,
       },
     ],
   };
 
   const trafficData = {
-    labels: ["Home", "Shop", "About", "Contact"],
+    labels: ["Home", "Shop", "About", "Blog", "Contact"],
     datasets: [
       {
-        label: "User Traffic",
-        data: [1200, 1500, 800, 400],
-        backgroundColor: ["#4CAF50", "#4CAF50", "#4CAF50", "#4CAF50"],
+        label: "Store Visits",
+        data: [2400, 3100, 1200, 1800, 800],
+        backgroundColor: "#0ea5e9",
+        borderRadius: 8,
       },
     ],
   };
 
   return (
-    <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        Analytics Dashboard
-      </h2>
-
-      <div className="mb-8">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">
-          Sales Overview
+    <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-xs">
+      <div className="mb-6">
+        <h3 className="text-xl font-extrabold text-slate-900">
+          Store Analytics Dashboard
         </h3>
-        <Bar data={salesData} options={{ responsive: true }} />
+        <p className="text-xs text-slate-500">
+          Real-time metrics and order traffic overview
+        </p>
       </div>
 
-      <div>
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">
-          User Traffic
-        </h3>
-        <Bar data={trafficData} options={{ responsive: true }} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+            Monthly Sales Volume ($)
+          </h4>
+          <Bar data={salesData} options={{ responsive: true }} />
+        </div>
+
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+            Category Page Traffic
+          </h4>
+          <Bar data={trafficData} options={{ responsive: true }} />
+        </div>
       </div>
     </div>
   );
 };
 
 const UserProfile = () => {
-  const [order, setOrder] = React.useState<Order[]>();
-
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
   const { data: session } = useSession();
-  const handleClick = async () => {
-    if (session) await signOut();
-    await signIn("github");
+
+  const handleAuthAction = async () => {
+    if (session) {
+      await signOut();
+    } else {
+      await signIn("github");
+    }
   };
 
   useEffect(() => {
-    const orderData = async () => {
-      const data = await GetOrderData();
-      console.log(data);
-      setOrder(data);
+    const fetchOrders = async () => {
+      try {
+        setLoadingOrders(true);
+        const data = await GetOrderData();
+        setOrders(data || []);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      } finally {
+        setLoadingOrders(false);
+      }
     };
-    orderData();
-  });
+    fetchOrders();
+  }, []); // Fixed infinite render loop with empty dependency array!
 
   if (!session) {
     return (
-      <div className="max-w-4xl max-sm:max-w-lg mx-auto font-[sans-serif] p-6">
-        <div className="w-full flex justify-center items-center h-[70vh]">
+      <div className="min-h-[75vh] flex items-center justify-center p-4 bg-[#fafbfc]">
+        <div className="bg-white rounded-3xl border border-slate-100 p-8 sm:p-12 shadow-sm text-center max-w-md w-full space-y-6">
+          <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mx-auto">
+            <FiUser className="w-8 h-8" />
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-extrabold text-slate-900">
+              Welcome to ModernStore
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-2">
+              Sign in with your GitHub account to access your wishlist, saved orders, and personalized discounts.
+            </p>
+          </div>
+
           <button
-            onClick={() => handleClick()}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-300"
+            onClick={() => handleAuthAction()}
+            className="w-full py-3.5 px-6 bg-slate-900 hover:bg-slate-800 text-white rounded-full font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-md transition active:scale-95 cursor-pointer"
           >
             <FaGithub className="w-5 h-5" />
-            Sign up with GitHub
+            <span>Sign In with GitHub</span>
           </button>
         </div>
       </div>
     );
   }
 
-// Function to get status badge color
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "pending":
-      return "bg-yellow-500 text-white";
-    case "shipped":
-      return "bg-blue-500 text-white";
-    case "delivered":
-      return "bg-green-500 text-white";
-    default:
-      return "bg-gray-500 text-white";
-  }
-};
+  const getStatusBadge = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "pending":
+        return "bg-amber-50 text-amber-600 border border-amber-200";
+      case "shipped":
+        return "bg-blue-50 text-blue-600 border border-blue-200";
+      case "delivered":
+        return "bg-emerald-50 text-emerald-600 border border-emerald-200";
+      default:
+        return "bg-slate-50 text-slate-600 border border-slate-200";
+    }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-md m-5">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">User Profile</h1>
-
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-          Personal Information
-        </h2>
-        <div>
-          <p className="text-gray-600 inline m-1">Name: </p>
-          <p className="inline text-gray-600 m-1">{session.user?.name}</p>
-        </div>
-        <div>
-          <p className="text-gray-600 inline m-1">Email: </p>
-          <p className="inline text-gray-600 m-1">{session.user?.email}</p>
-        </div>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-          Saved Addresses
-        </h2>
-        <p className="text-gray-600">No saved addresses available.</p>
-      </section>
-
-      <section>
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-          Order History
-        </h2>
-        {!order ? (
-          <p className="text-gray-600">No order history available.</p>
-        ) : (
-          <div className="max-w-5xl mx-auto p-6">
-      <h2 className="text-2xl font-semibold mb-4">Orders</h2>
-      <div className="grid gap-6">
-        {order.map((order) => (
-          <Card key={order._id} className="shadow-lg transition-transform transform hover:scale-[1.02]">
-            <CardHeader className="flex justify-between">
-              <CardTitle>
-                <span className="text-gray-700">Order Date:</span>{" "}
-                {new Date(order.createdAt).toLocaleDateString()}
-              </CardTitle>
-              <Badge className={`px-3 py-1 rounded-lg ${getStatusColor(order.status)}`}>
-                {order.status}
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <p className="text-lg font-medium">Total Price: <span className="text-pink-600">${order.totalPrice}</span></p>
-              <h3 className="font-semibold mt-3">Ordered Products:</h3>
-              <div className="overflow-x-auto mt-2">
-                <table className="w-full text-sm border rounded-md overflow-hidden">
-                  <thead className="bg-gray-100 text-gray-700">
-                    <tr>
-                      <th className="p-2 text-left">Product Name</th>
-                      <th className="p-2 text-left">Category</th>
-                      <th className="p-2 text-left">Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.products.map((product) => (
-                      <tr key={product._id} className="border-t hover:bg-gray-50">
-                        <td className="p-2 text-black">{product.name}</td>
-                        <td className="p-2">{product.category}</td>
-                        <td className="p-2">${product.price}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+    <div className="bg-[#fafbfc] min-h-screen py-8 sm:py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        {/* Profile Header Banner */}
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-extrabold text-2xl flex items-center justify-center shadow-md">
+              {session.user?.name ? session.user.name.charAt(0).toUpperCase() : "U"}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-extrabold text-slate-900">
+                  {session.user?.name || "Customer"}
+                </h1>
+                <span className="text-[11px] font-bold bg-orange-50 text-orange-600 px-2.5 py-0.5 rounded-full">
+                  Verified Member
+                </span>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-        )}
-      </section>
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                {session.user?.email}
+              </p>
+            </div>
+          </div>
 
-      <section className="w-full flex jusitfy-right mt-4">
-        <button
-          onClick={() => handleClick()}
-          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
-        >
-          <FiLogOut className="w-5 h-5" />
-          Sign Out
-        </button>
-      </section>
+          <button
+            onClick={() => handleAuthAction()}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-700 text-xs sm:text-sm font-semibold transition"
+          >
+            <FiLogOut className="w-4 h-4" />
+            <span>Sign Out</span>
+          </button>
+        </div>
 
-      <section className="mt-10">
+        {/* Order History */}
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-xs">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+            <div>
+              <h2 className="text-xl font-extrabold text-slate-900">
+                Order History
+              </h2>
+              <p className="text-xs text-slate-500">
+                Track your recent purchases and delivery progress
+              </p>
+            </div>
+            <span className="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-full">
+              {orders.length} {orders.length === 1 ? "Order" : "Orders"}
+            </span>
+          </div>
+
+          {loadingOrders ? (
+            <div className="space-y-4">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="h-32 rounded-2xl shimmer"></div>
+              ))}
+            </div>
+          ) : orders.length === 0 ? (
+            <div className="text-center py-10">
+              <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                <FiPackage className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-slate-700">No orders placed yet</h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Your past completed orders will be archived and shown here.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {orders.map((order) => (
+                <div
+                  key={order._id}
+                  className="rounded-2xl border border-slate-200/80 p-5 hover:border-slate-300 transition bg-slate-50/50"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/60 text-xs">
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold text-slate-900">
+                        Order #{order._id?.slice(-6) || "REC-01"}
+                      </span>
+                      <span className="text-slate-400">•</span>
+                      <span className="text-slate-500">
+                        {order.createdAt
+                          ? new Date(order.createdAt).toLocaleDateString()
+                          : "Recently placed"}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${getStatusBadge(
+                        order.status
+                      )}`}
+                    >
+                      {order.status || "Processing"}
+                    </span>
+                  </div>
+
+                  <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <p className="text-xs text-slate-500">Ordered Items:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {order.products?.map((prod, idx) => (
+                          <span
+                            key={idx}
+                            className="text-xs font-semibold px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-slate-800"
+                          >
+                            {prod?.name || "Product Item"}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-xs text-slate-400 block">Total Amount</span>
+                      <span className="text-lg font-black text-slate-900">
+                        ${order.totalPrice?.toFixed(2) || "0.00"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Analytics Section */}
         <AnalyticsDashboard />
-      </section>
+      </div>
     </div>
   );
 };
