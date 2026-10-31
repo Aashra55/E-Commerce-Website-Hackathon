@@ -5,8 +5,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../lib/auth"; 
 
 const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "7xt4qcah",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2024-01-27",
   useCdn: false,
   token: process.env.SANITY_API_TOKEN, 
@@ -49,5 +49,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
-
-
