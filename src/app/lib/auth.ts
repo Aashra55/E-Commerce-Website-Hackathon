@@ -4,7 +4,8 @@ import type { User, Session } from "next-auth";
 import { saveUserToSanity } from "../../lib/sanity";
 
 export const authOptions = {
-  debug: true,
+  secret: process.env.NEXTAUTH_SECRET || "modernstore_nextauth_fallback_secret_32chars",
+  debug: false,
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID || "",

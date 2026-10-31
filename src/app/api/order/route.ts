@@ -3,11 +3,11 @@ import { createClient } from "@sanity/client";
  
 // Initialize Sanity client
 const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "7xt4qcah",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   useCdn: false,
   apiVersion: "2024-02-04",
-  token: process.env.SANITY_API_TOKEN // Use an environment variable for security
+  token: process.env.SANITY_API_TOKEN,
 });
 
 export async function POST(req: NextRequest) {
